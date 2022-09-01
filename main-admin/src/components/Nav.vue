@@ -6,7 +6,7 @@
     </a-breadcrumb>
     <a-dropdown>
       <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-        username <a-icon type="down" />
+        {{ $store.state.user.user.username }} <a-icon type="down" />
       </a>
       <a-menu slot="overlay">
         <a-menu-item>
@@ -18,7 +18,11 @@
 </template>
 
 <script>
-export default {};
+export default {
+  created() {
+    console.log(this.$store.state);
+  },
+};
 </script>
 
 <style scoped lang="less">

@@ -9,12 +9,26 @@ const routes = [
   {
     path: '/',
     name: 'Login',
-    component: Login
+    component: Login,
+    meta: {
+      title: '登录',
+    },
   },
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      title: '首页',
+    },
+    children: [{
+      path: 'charts',
+      name: 'Charts',
+      meta: {
+        title: '统计',
+      },
+      component: () => import('../views/Home/Charts.vue'),
+    }],
   },
 ]
 

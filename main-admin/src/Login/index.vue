@@ -1,84 +1,104 @@
 <template>
-  <a-form
-    id="components-form-demo-normal-login"
-    :form="form"
-    class="login-form"
-    @submit="handleSubmit"
-  >
-    <a-form-item>
-      <a-input
-        v-decorator="[
-          'userName',
-          {
-            rules: [{ required: true, message: 'Please input your username!' }],
-          },
-        ]"
-        placeholder="Username"
-      >
-        <a-icon slot="prefix" type="user" style="color: rgba(0, 0, 0, 0.25)" />
-      </a-input>
-    </a-form-item>
-    <a-form-item>
-      <a-input
-        v-decorator="[
-          'password',
-          {
-            rules: [{ required: true, message: 'Please input your Password!' }],
-          },
-        ]"
-        type="password"
-        placeholder="Password"
-      >
-        <a-icon slot="prefix" type="lock" style="color: rgba(0, 0, 0, 0.25)" />
-      </a-input>
-    </a-form-item>
-    <a-form-item>
-      <a-checkbox
-        v-decorator="[
-          'remember',
-          {
-            valuePropName: 'checked',
-            initialValue: true,
-          },
-        ]"
-      >
-        Remember me
-      </a-checkbox>
-      <a class="login-form-forgot" href=""> Forgot password </a>
-      <a-button type="primary" html-type="submit" class="login-form-button">
-        Log in
-      </a-button>
-      Or
-      <a href=""> register now! </a>
-    </a-form-item>
-  </a-form>
+  <div class="login">
+    <a-form-model
+      class="login-form"
+      ref="loginForm"
+      :model="loginForm"
+      :rules="rules"
+      v-bind="layout"
+    >
+      <a-form-model-item has-feedback label="邮箱" prop="email">
+        <a-input v-model="loginForm.email" type="email" autocomplete="off" />
+      </a-form-model-item>
+      <a-form-model-item has-feedback label="密码" prop="password">
+        <a-input
+          v-model="loginForm.password"
+          type="password"
+          autocomplete="off"
+        />
+      </a-form-model-item>
+      <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+        <a-button type="primary" @click="submitForm('loginForm')">
+          提交
+        </a-button>
+        <a-button style="margin-left: 10px" @click="resetForm('loginForm')">
+          重置
+        </a-button>
+      </a-form-model-item>
+    </a-form-model>
+  </div>
 </template>
-
 <script>
+import user from "@/api/user";
 export default {
-  beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "normal_login" });
+  data() {
+    const emailReg = /^[\w-]+@[\w.-]+.com$/;
+    let validateEmail = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("请输入邮箱"));
+      }
+      if (emailReg.test(value)) {
+        return callback();
+      }
+      return callback(new Error("邮箱格式不正确"));
+    };
+    let validatePass = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else {
+        callback();
+      }
+    };
+    return {
+      loginForm: {
+        email: "",
+        password: "",
+      },
+      rules: {
+        email: [{ validator: validateEmail, trigger: "change" }],
+        password: [{ validator: validatePass, trigger: "change" }],
+      },
+      layout: {
+        labelCol: { span: 4 },
+        wrapperCol: { span: 14 },
+      },
+    };
   },
   methods: {
-    handleSubmit(e) {
-      e.preventDefault();
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log("Received values of form: ", values);
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          user
+            .postLogin(this.loginForm)
+            .then((resp) => {
+              console.log(resp);
+              this.$store.dispatch("user/fetchUser", resp);
+              this.$router.push({
+                name: "Charts",
+              });
+            })
+            .catch((error) => {
+              this.$message.error(error);
+            });
+          return true;
+        } else {
+          console.log("error submit!!");
+          return false;
         }
       });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     },
   },
 };
 </script>
-<style>
-#components-form-demo-normal-login .login-form {
-  max-width: 300px;
-}
-#components-form-demo-normal-login .login-form-forgot {
-  float: right;
-}
-#components-form-demo-normal-login .login-form-button {
-  width: 100%;
+
+<style lang="less" scoped>
+.login-form {
+  max-width: 500px;
+  margin: 100px auto;
+  border: 1px solid #eee;
+  padding: 30px 20px 6px;
 }
 </style>

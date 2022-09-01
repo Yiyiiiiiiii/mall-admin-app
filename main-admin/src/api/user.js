@@ -1,5 +1,7 @@
+import axios from "./axios";
+
 export default {
-    login(params) {
-        return this.axios.get("/user")
+    postLogin(params) {
+        return axios.post("/passport/login", params);
     }
 }
