@@ -71,7 +71,6 @@ export default {
           user
             .postLogin(this.loginForm)
             .then((resp) => {
-              console.log(resp);
               this.$store.dispatch("user/fetchUser", resp);
               this.$router.push({
                 name: "Charts",

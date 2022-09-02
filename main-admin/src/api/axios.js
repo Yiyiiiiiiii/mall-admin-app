@@ -1,5 +1,5 @@
 import axios from 'axios'
-// import store from './store';
+// import store from '@/store';
 
 // 创建axios实例
 const ins = axios.create({
@@ -7,18 +7,16 @@ const ins = axios.create({
 });
 
 ins.interceptors.request.use((request) => {
-    console.log(request);
-    return request;
-    // if (resp.url.includes('/passport')) {
-    //     return resp;
-    // }
-    // return {
-    //     ...resp,
-    //     params: {
-    //         ...resp,
-    //         appkey: store.state.user.appkey,
-    //     }
-    // }
+    if (request.url.includes('/passport')) {
+        return request;
+    }
+    return {
+        ...request,
+        params: {
+            ...request,
+            appkey: store.state.user.appkey,
+        }
+    }
 }, (error) => Promise.reject(error));
 
 ins.interceptors.response.use((response) => {

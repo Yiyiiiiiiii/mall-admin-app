@@ -10,7 +10,7 @@
       </a>
       <a-menu slot="overlay">
         <a-menu-item>
-          <a href="javascript:;">退出</a>
+          <li @click="handleRemove">退出</li>
         </a-menu-item>
       </a-menu>
     </a-dropdown>
@@ -19,8 +19,13 @@
 
 <script>
 export default {
-  created() {
-    console.log(this.$store.state);
+  methods: {
+    handleRemove() {
+      this.$store.dispatch("user/fetchUserRemove");
+      this.$router.push({
+        name: "Login",
+      });
+    },
   },
 };
 </script>
