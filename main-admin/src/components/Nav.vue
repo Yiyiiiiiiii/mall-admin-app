@@ -1,8 +1,10 @@
 <template>
   <div class="nav-container">
     <a-breadcrumb class="breadcrumb">
-      <a-breadcrumb-item>首页</a-breadcrumb-item>
-      <a-breadcrumb-item>统计</a-breadcrumb-item>
+      <a-breadcrumb-item>{{
+        currentRoute.matched[0].meta.title
+      }}</a-breadcrumb-item>
+      <a-breadcrumb-item>{{ currentRoute.meta.title }}</a-breadcrumb-item>
     </a-breadcrumb>
     <a-dropdown>
       <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
@@ -19,6 +21,16 @@
 
 <script>
 export default {
+  data() {
+    return {
+      currentRoute: this.$router.currentRoute,
+    };
+  },
+  watch: {
+    $route() {
+      this.currentRoute = this.$router.currentRoute;
+    },
+  },
   methods: {
     handleRemove() {
       this.$store.dispatch("user/fetchUserRemove");
@@ -38,6 +50,7 @@ export default {
   background-color: #fff;
   display: table;
   padding: 0 10px;
+  border-bottom: 1px solid #ddd;
   .breadcrumb {
     display: table-cell;
     vertical-align: middle;

@@ -1,34 +1,29 @@
 <template>
   <div class="left-menu">
-    <a-layout-sider v-model="collapsed" collapsible>
+    <a-layout-sider>
       <a-menu
+        mode="inline"
         theme="dark"
         :default-selected-keys="[defaultSelectedKeys]"
         :default-open-keys="[defaultOpenKey]"
-        mode="inline"
+        :inline-collapsed="$store.state.collapsed"
       >
-        <a-sub-menu key="menu1">
-          <span slot="title"><a-icon type="home" /><span>首页</span></span>
-          <a-menu-item
-            :key="$store.state.menu.menuRoutes.name"
-            @click="hadnleCharts"
-            ><a-icon type="area-chart" /> 统计</a-menu-item
-          >
-        </a-sub-menu>
-        <a-sub-menu key="sub2">
-          <span slot="title"><a-icon type="shop" /><span>商品</span></span>
-          <a-menu-item
-            :key="$store.state.menu.menuRoutes.name"
-            @click="handleList"
-          >
-            <a-icon type="unordered-list" />商品列表
-          </a-menu-item>
-          <a-menu-item
-            :key="$store.state.menu.menuRoutes.name"
-            @click="handleAdd"
-            ><a-icon type="file-add" /> 添加商品</a-menu-item
-          >
-        </a-sub-menu>
+        <template v-for="route in $store.state.menu.menuRoutes">
+          <a-sub-menu v-if="!route.meta.hidden" :key="route.name">
+            <span slot="title">
+              <a-icon :type="route.meta.icon" />
+              <span>{{ route.meta.title }}</span>
+            </span>
+            <template v-for="child in route.children">
+              <a-menu-item v-if="!child.meta.hidden" :key="child.name">
+                <router-link :to="{ name: child.name }">
+                  <a-icon :type="child.meta.icon" />
+                  {{ child.meta.title }}
+                </router-link>
+              </a-menu-item>
+            </template>
+          </a-sub-menu>
+        </template>
       </a-menu>
     </a-layout-sider>
   </div>
@@ -36,14 +31,9 @@
 <script>
 export default {
   data() {
-    return {
-      collapsed: false,
-    };
+    return {};
   },
-  created() {
-    const resp = this.$route;
-    this.$store.dispatch("menu/fetchMenuRoutes", resp);
-  },
+  created() {},
   computed: {
     defaultSelectedKeys: {
       get() {
@@ -58,23 +48,7 @@ export default {
       },
     },
   },
-  methods: {
-    hadnleCharts() {
-      this.$router.push({
-        name: "Charts",
-      });
-    },
-    handleList() {
-      this.$router.push({
-        name: "List",
-      });
-    },
-    handleAdd() {
-      this.$router.push({
-        name: "Add",
-      });
-    },
-  },
+  methods: {},
 };
 </script>
 

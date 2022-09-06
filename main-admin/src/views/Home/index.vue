@@ -20,5 +20,8 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less" scoped>
+.ant-layout-content {
+  background-color: #fff;
+}
 </style>

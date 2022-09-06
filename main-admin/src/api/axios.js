@@ -1,5 +1,5 @@
 import axios from 'axios'
-// import store from '@/store';
+import store from '@/store';
 
 // 创建axios实例
 const ins = axios.create({
@@ -13,8 +13,8 @@ ins.interceptors.request.use((request) => {
     return {
         ...request,
         params: {
-            ...request,
-            appkey: store.state.user.appkey,
+            ...request.params,
+            appkey: store.state.user.user.appkey,
         }
     }
 }, (error) => Promise.reject(error));
