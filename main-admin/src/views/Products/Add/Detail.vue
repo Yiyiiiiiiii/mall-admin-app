@@ -52,17 +52,14 @@
       </a-form-model-item>
       <a-form-model-item label="商品相册" prop="images">
         <a-upload
-          :action="
-            'http://mallapi.duyiedu.com/upload/images?appkey=' +
-            $store.state.user.user.appkey
-          "
+          :action="'/upload/images?appkey=' + $store.state.user.user.appkey"
           list-type="picture-card"
           :file-list="fileList"
           @preview="handlePreview"
           @change="handleChange"
           name="avatar"
         >
-          <div v-if="fileList.length < 8">
+          <div v-if="fileList?.length < 8">
             <a-icon :type="loading ? 'loading' : 'plus'" />
             <div class="ant-upload-text">Upload</div>
           </div>
@@ -105,7 +102,7 @@ export default {
   },
   props: ["form"],
   created() {
-    if (this.form.images.length > 0) {
+    if (this.form?.images?.length > 0) {
       this.fileList = this.form.images.map((item, index) => ({
         uid: index,
         name: `image-${index}.png`,
@@ -136,7 +133,7 @@ export default {
       this.fileList = fileList;
     },
     submit() {
-      this.$refs.productForm.validate((valid) => {
+      this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.$emit("submit", this.form);
           return true;

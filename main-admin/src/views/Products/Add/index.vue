@@ -48,7 +48,10 @@ export default {
     };
   },
   created() {
-    console.log(this.$route.params);
+    const id = this.$route.params.id;
+    product.getProductDetail(id).then((res) => {
+      this.form = res;
+    });
   },
   methods: {
     next() {
@@ -58,16 +61,23 @@ export default {
       this.current--;
     },
     submit(form) {
-      // if(){}
-
       this.form = {
         ...this.form,
         form,
       };
-      product.addProduct(this.form).then(() => {
-        this.$message("新增成功");
-        this.$router.push({ name: "List" });
-      });
+      if (this.current === 1) {
+        if (this.$route.params.id) {
+          product.editPorduct(this.form).then(() => {
+            this.$router.push({
+              name: "List",
+            });
+          });
+        } else {
+          product.addProduct(this.form).then(() => {
+            this.$router.push({ name: "List" });
+          });
+        }
+      }
     },
   },
   components: { Form, Detail },

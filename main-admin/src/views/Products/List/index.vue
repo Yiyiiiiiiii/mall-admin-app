@@ -11,7 +11,7 @@
           type="primary"
           :disabled="!hasSelected"
           :loading="loading"
-          @click="deleteSeleted(record)"
+          @click="deleteSeleted"
         >
           删除
         </a-button>
@@ -110,6 +110,7 @@ export default {
       tip: "",
       visible: false,
       confirmLoading: false,
+      detail: {},
     };
   },
   components: { Search },
@@ -132,17 +133,20 @@ export default {
       this.formData = form;
       this.getProductTable();
     },
-    deleteSeleted(record) {
+    async deleteSeleted() {
       this.loading = true;
       // ajax request after empty completing
       setTimeout(() => {
         this.loading = false;
-        this.removeProduct(record);
         this.selectedRowKeys = [];
       }, 1000);
+      for (let i = 0; i < this.selectedRowKeys.length; i++) {
+        let id = this.selectedRowKeys[i];
+        this.detail = await this.getProductDetail(id);
+        this.removeProduct(this.detail);
+      }
     },
     onSelectChange(selectedRowKeys) {
-      console.log("selectedRowKeys changed: ", selectedRowKeys);
       this.selectedRowKeys = selectedRowKeys;
     },
     getProductTable() {
@@ -153,13 +157,18 @@ export default {
         .then((res) => {
           this.productTable = res.data.map((item) => ({
             ...item,
-            categoryName: this.categoryName[item.category].name,
+            categoryName: this.categoryName[item.category]?.name,
             key: item.id,
           }));
         });
     },
     editProduct(record) {
-      this.$emit("edit", record);
+      this.$router.push({
+        name: "ProductEdit",
+        params: {
+          id: record.id,
+        },
+      });
     },
     removeProduct(record) {
       this.$confirm({
@@ -180,10 +189,14 @@ export default {
             });
         },
         onCancel() {
-          console.log(id);
           console.log("取消成功");
         },
         class: "confirm-box",
+      });
+    },
+    getProductDetail(id) {
+      return product.getProductDetail(id).then((res) => {
+        return res;
       });
     },
   },
